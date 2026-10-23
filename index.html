@@ -299,7 +299,7 @@
     <div class="hdr-left">
       
       <div>
-        <div class="hdr-dest">Tokyo &amp; Kyoto · 2026<span class="hdr-ver" id="hdr-ver">v3</span></div>
+        <div class="hdr-dest">Tokyo &amp; Kyoto · 2026<span class="hdr-ver" id="hdr-ver">v4</span></div>
         <div class="hdr-hc">Happy Camper</div>
       </div>
     </div>
@@ -345,7 +345,7 @@
    Source: HCI Canvas for Essam ZAHID 2026-11.xlsx
 ═══════════════════════════════════════════════════════ */
 var CONFIG = {
-  version: 'v3',
+  version: 'v4',
   tripTitle: 'Tokyo & Kyoto',
   client: 'Essam Zahid',
   startDate: '2026-10-30',
@@ -368,8 +368,8 @@ var CONFIG = {
       ],
       tags:['800+ private tours','Raised in Kyoto','Bilingual','Food & craft'] }
   },
-  /* FX defaults (offline). JPY per 1 unit. USD from planning canvas (JPYUSD 0.006307756). */
-  fx: { USD:158.54, EUR:172.00, GBP:199.00 },
+  /* FX defaults (offline). JPY per 1 unit. USD from planning canvas (157). */
+  fx: { USD:157.00, EUR:172.00, GBP:199.00 },
   weather: {
     Tokyo: { lat:35.6762, lng:139.6503 },
     Kyoto: { lat:35.0116, lng:135.7681 }
@@ -378,10 +378,25 @@ var CONFIG = {
   goTaxi: 'https://go.mo-t.com/'
 };
 
+/* Google Place IDs, keyed by mapsQuery (q). Verified against Google Places. */
+var PLACE_IDS = {
+  'Narita International Airport Terminal 2':'ChIJ4yM7gZ3zImARsGTFuKlNSQc',
+  'Aman Tokyo Otemachi Tower':'ChIJfV9KdPiLGGARn4ma2GUEoJo',
+  'Sushi Masuda Aoyama Tokyo':'ChIJ8xCXcGCLGGAReoGDRL6vlHg',
+  'Kawamura Ginza Tokyo':'ChIJq6qbL--LGGAR2eBLWFrpsCA',
+  'Sushi Mizukami Ichibancho Chiyoda Tokyo':'ChIJAQB8l2-MGGARdmIv3bkhGyg',
+  'Yakitori Shinohara Nishi-Azabu Tokyo':'ChIJ-SQMaBSLGGAR7AcN6srbPcg',
+  'Sazenka Minami-Azabu Tokyo':'ChIJqZDavAuLGGARV-fj_CVDFnI',
+  'Capella Kyoto Miyagawacho':'ChIJo2d4PwAJAWARatMDAEMOnqs',
+  'Gion Maeda Kyoto':'ChIJ__IdF8EIAWARQcM2iKdStHY',
+  'Nikunotakumi Miyoshi Gion Kyoto':'ChIJ10NH2MMIAWARGQ-o1Y6eHhw',
+  'Kansai International Airport Terminal 1':'ChIJ9_rNIxO5AGARiI-QjZ-ncfE'
+};
+
 /* Hotels */
 var HOTELS = {
   aman:    { name:'Aman Tokyo', area:'Otemachi · Tokyo', addr:'The Otemachi Tower, 1-5-6 Otemachi, Chiyoda-ku, Tokyo', q:'Aman Tokyo Otemachi Tower', mapsLink:null },
-  capella: { name:'Capella Kyoto', area:'Miyagawa-cho · Higashiyama · Kyoto', addr:'Miyagawa-cho, Higashiyama-ku, Kyoto', q:'Capella Kyoto Miyagawacho', mapsLink:null }
+  capella: { name:'Capella Kyoto', area:'Miyagawa-cho · Higashiyama · Kyoto', addr:'130 Komatsu-cho, Higashiyama-ku, Kyoto', q:'Capella Kyoto Miyagawacho', mapsLink:null }
 };
 
 /* ═══════════════════════════════════════════════════════
@@ -415,17 +430,20 @@ var DAYS = [
 
   /* ── DAY 2 · Sat 31 Oct · Sushi Masuda ── */
   { date:'2026-10-31', dayNum:2, weekday:'Saturday, 31 October', city:'Tokyo', hotel:'aman', people:[], occasion:'Halloween', feature:true,
-    notes:'The trip opens with sushi at lunch, leaving the evening free. It is Halloween: Shibuya fills with very large crowds after dark, so it is best avoided tonight.',
+    notes:'A big opening day: sushi at lunch, Kobe beef at dinner — keep the afternoon gentle in between. It is Halloween: Shibuya fills with very large crowds after dark, so it is best avoided tonight.',
     stops:[
       { time:'12:00', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
         title:'Sushi Masuda', sub:'Lunch · Edomae sushi · Aoyama',
         facts:['Sushi omakase','Ex-Sukiyabashi Jiro'],
-        q:'Sushi Masuda Aoyama Tokyo', addr:null, mapsLink:null, taxi:true,
-        notes:'Takashi Masuda trained for years under Jiro Ono before opening his own counter in Aoyama, and his sushi keeps that rigour — firm, well-seasoned rice, every piece brushed and served at exactly the right moment — but with more warmth and humour across the counter than the Jiro name might suggest. Lunch is the clever way to do Masuda: the same fish as at dinner, in daylight, with the rest of the day to enjoy. A strong start to a trip built around your best sushi.',
+        q:'Sushi Masuda Aoyama Tokyo', addr:'IJK Minami-Aoyama Reiwa 1F, 3-14-27 Minami-Aoyama, Minato-ku, Tokyo', mapsLink:null, taxi:true,
+        notes:'Takashi Masuda trained for years under Jiro Ono before opening his own counter in Aoyama, and his sushi keeps that rigour — firm, well-seasoned rice, every piece brushed and served at exactly the right moment — but with more warmth and humour across the counter than the Jiro name might suggest. Lunch is the clever way to do Masuda: the same fish as at dinner, in daylight. A strong start to a trip built around your best sushi.',
         alert:FRAGRANCE },
-      { time:'', type:'restaurant', badge:'At leisure', status:'pending',
-        title:'Evening free', sub:'Light dinner of your choice',
-        notes:'Kept deliberately open — one big meal a day. Happy to suggest something simple nearby on WhatsApp.' }
+      { time:'18:00', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
+        title:'Kawamura', sub:'Dinner · Kobe beef · Ginza',
+        facts:['Kobe beef','One of Tokyo’s hardest tables'],
+        q:'Kawamura Ginza Tokyo', addr:'7-3-16 Ginza, Chuo-ku, Tokyo', mapsLink:null, taxi:true,
+        notes:'Kawamura is the quiet legend of Tokyo beef — a small, unmarked room upstairs in Ginza that has served Kobe beef to regulars for decades and is almost impossible to book. There is no menu to speak of: the cuts are brought to you raw, you choose how much you would like, and they are cooked with complete restraint so the beef speaks for itself. Before it comes a clear, deep consommé; after it, rice under a generous shaving of truffle that people talk about for years. This is your wagyu night in Tokyo, and the first seating at 18:00 is the one to have.',
+        alert:'No perfume, cologne or scented products — including fabric softener on clothing.' }
     ] },
 
   /* ── DAY 3 · Sun 1 Nov · Sushi Mizukami ── */
@@ -452,16 +470,16 @@ var DAYS = [
         alert:'Smoke from the grill — wear something you won’t mind smelling of charcoal. No perfume, please.' }
     ] },
 
-  /* ── DAY 5 · Tue 3 Nov · Culture Day · Ukai ── */
+  /* ── DAY 5 · Tue 3 Nov · Culture Day · Sazenka ── */
   { date:'2026-11-03', dayNum:5, weekday:'Tuesday, 3 November', city:'Tokyo', hotel:'aman', people:[], occasion:'Culture Day', feature:true,
-    notes:'Bunka no Hi (Culture Day) is a national holiday — museums are busy, but many offer free entry. Tonight is the wagyu dinner, and your last night in Tokyo.',
+    notes:'Bunka no Hi (Culture Day) is a national holiday — museums are busy, but many offer free entry. Tonight, your last in Tokyo, is something different: Chinese cooking at its most refined, at Sazenka.',
     stops:[
-      { time:'17:30', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
-        title:'Ukai Ginza', sub:'Dinner · Teppanyaki · Ginza Ukai-tei',
-        facts:['Wagyu teppanyaki','Private chef at the griddle'],
-        q:'Ginza Ukai-tei 5-15-8 Ginza Tokyo', addr:'Jiji Press Bldg 1F, 5-15-8 Ginza, Chuo-ku, Tokyo', mapsLink:null, taxi:true,
-        notes:'Ukai is Tokyo’s grandest teppanyaki, and Ginza is its flagship. The room — a hundred-year-old zelkova beam, Art Nouveau glass, antique furniture — feels more like a private museum than a restaurant. A chef cooks in front of you on the griddle: seasonal seafood and vegetables first, then Japanese Black wagyu cooked exactly to your liking, and the garlic rice that follows is worth saving room for. Dessert and coffee are served afterwards in a separate salon. This is your wagyu night.',
-        alert:'Smart dress suits the room. No perfume, please.' }
+      { time:'', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
+        title:'Sazenka', sub:'Dinner · Chinese · Minami-Azabu · time to be confirmed',
+        facts:['⭐⭐⭐ Michelin','Chinese tea pairing'],
+        q:'Sazenka Minami-Azabu Tokyo', addr:'4-7-5 Minami-Azabu, Minato-ku, Tokyo', mapsLink:null, taxi:true,
+        notes:'Tomoya Kawada’s Sazenka was the first Chinese restaurant in Japan to hold three Michelin stars, and it is unlike any Chinese meal you will have had. He cooks classical Chinese technique — the clear soups, the char siu, the delicate dim sum — with the precision and seasonality of Japanese cuisine, in a serene old house in Minami-Azabu. The thing to do here is the Chinese tea pairing instead of wine: rare teas chosen dish by dish, each one a revelation. In early November look out for hairy crab. A perfect change of register before Kyoto.',
+        alert:'No perfume, please.' }
     ] },
 
   /* ── DAY 6 · Wed 4 Nov · To Kyoto · Maeda ── */
@@ -478,18 +496,21 @@ var DAYS = [
       { time:'18:00', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
         title:'Maeda', sub:'Dinner · Contemporary kappo · Gion',
         facts:['Formerly ⭐⭐⭐ Michelin','Counter dining'],
-        q:'Gion Maeda Kyoto', addr:'Gion, Higashiyama-ku, Kyoto', mapsLink:null, taxi:true,
+        q:'Gion Maeda Kyoto', addr:'570-118 Gionmachi Minamigawa, Higashiyama-ku, Kyoto', mapsLink:null, taxi:true,
         notes:'Maeda held three Michelin stars until the chef asked to be removed from the guide — which tells you most of what you need to know about the place. The cooking is rooted in Kyoto kappo but anything but stiff: inventive, generous and full of surprises, with dishes such as fried abalone with its own liver sauce that stay with you. Early November is high autumn on a Kyoto menu — matsutake, chestnut, the first crab. A wonderful first night in Kyoto.',
         alert:FRAGRANCE }
     ] },
 
   /* ── DAY 7 · Thu 5 Nov · Ryan full day ── */
   { date:'2026-11-05', dayNum:7, weekday:'Thursday, 5 November', city:'Kyoto', hotel:'capella', people:['ryan'], occasion:null, feature:false,
-    notes:'A full guided day around Kyoto with Ryan-san. The evening is left free to rest after a day on your feet.',
+    notes:'A full guided day around Kyoto with Ryan-san, with a private car for the day. The evening is left free to rest after a day on your feet.',
     stops:[
       { time:'', type:'activity', badge:'Confirmed', status:'confirmed',
         title:'Guided day with Ryan Durning', sub:'Full day · Kyoto · start time to be confirmed',
         notes:'Ryan-san grew up in Kyoto and tells the city through its stories rather than its dates. He will shape the day around what interests you both — temples and gardens, craft workshops and knife makers, food stops, or quiet neighbourhoods away from the crowds. Early November is the start of the autumn colour season, and the hills around Kyoto turn first. Comfortable walking shoes recommended.' },
+      { time:'', type:'transport', icon:'🚗', badge:'Confirmed', status:'confirmed',
+        title:'Private car service', sub:'Full day · with Ryan-san',
+        notes:'A car and driver for the whole day, so you can cover more ground and rest between stops. Ryan-san coordinates timings with the driver.' },
       { time:'', type:'restaurant', badge:'At leisure', status:'pending',
         title:'Evening free', sub:'Light dinner of your choice',
         notes:'Kept open on purpose after a full day out. Ask on WhatsApp for something simple and good nearby.' }
@@ -502,25 +523,28 @@ var DAYS = [
       { time:'17:00', type:'restaurant', badge:'Confirmed', status:'confirmed', featured:true,
         title:'Miyoshi', sub:'Dinner · Wagyu kaiseki · Gion',
         facts:['Wagyu counter','Tabelog Silver'],
-        q:'Nikunotakumi Miyoshi Gion Kyoto', addr:'Gion, Higashiyama-ku, Kyoto', mapsLink:null, taxi:true,
-        notes:'Niku no Takumi Miyoshi treats wagyu the way a kaiseki kitchen treats fish: a long course at an eight-seat counter, each cut prepared differently — raw, seared, simmered, grilled over charcoal — so you taste how much the beef can do. It is a very different experience from Ukai’s teppanyaki in Tokyo, and in many ways the more interesting of the two. Book-ending your time in Japan with these two meat meals was intentional.',
+        q:'Nikunotakumi Miyoshi Gion Kyoto', addr:'570-15 Gionmachi Minamigawa, Higashiyama-ku, Kyoto', mapsLink:null, taxi:true,
+        notes:'Niku no Takumi Miyoshi treats wagyu the way a kaiseki kitchen treats fish: a long course at an eight-seat counter, each cut prepared differently — raw, seared, simmered, grilled over charcoal — so you taste how much the beef can do. Where Kawamura in Tokyo is about a few perfect cuts, Miyoshi is about range — and seeing the two side by side is the point. Book-ending your time in Japan with these two meat meals was intentional.',
         alert:'No perfume, please.' }
     ] },
 
   /* ── DAY 9 · Sat 7 Nov · Ryan half day · Departure ── */
   { date:'2026-11-07', dayNum:9, weekday:'Saturday, 7 November', city:'Kyoto', hotel:null, people:['ryan'], occasion:'Departure', feature:false,
-    notes:'Check out of Capella Kyoto (the hotel will hold your luggage), a final half day with Ryan-san, then on to Kansai Airport for the late flight home.',
+    notes:'Check out of Capella Kyoto (the hotel will hold your luggage), a final half day with Ryan-san and a private car, then on to Kansai Airport for the late flight home.',
     stops:[
       { time:'', type:'activity', badge:'Confirmed', status:'confirmed',
         title:'Half-day with Ryan Durning', sub:'Half day · Kyoto · timing to be confirmed',
         notes:'A last morning or afternoon in Kyoto — perhaps Nishiki Market and a final round of shopping, or a quiet temple garden before the journey home.' },
+      { time:'', type:'transport', icon:'🚗', badge:'Confirmed', status:'confirmed',
+        title:'Private car service', sub:'Half day · with Ryan-san',
+        notes:'A car and driver for the half day with Ryan-san.' },
       { time:'~19:30', type:'transport', badge:'Logistics', status:'logistics',
         title:'Transfer to Kansai Airport (KIX)', sub:'Kyoto → KIX · allow about 90 min by car',
-        q:'Kansai International Airport Terminal 1', addr:'Kansai International Airport Terminal 1, Izumisano, Osaka', mapsLink:null,
+        q:'Kansai International Airport Terminal 1', addr:'Kansai International Airport, 1 Senshu-Kuko Kita, Izumisano, Osaka', mapsLink:null,
         notes:'Leave Kyoto by around 19:30 to be at the airport well ahead of check-in for a 23:10 departure. The Haruka express from Kyoto Station is the alternative (about 75 min).' },
       { time:'23:10', type:'flight', badge:'Logistics', status:'logistics',
         title:'Depart — Kansai (KIX)', sub:'Emirates EK317 · Terminal 1',
-        q:'Kansai International Airport Terminal 1', addr:'Kansai International Airport Terminal 1, Izumisano, Osaka', mapsLink:null,
+        q:'Kansai International Airport Terminal 1', addr:'Kansai International Airport, 1 Senshu-Kuko Kita, Izumisano, Osaka', mapsLink:null,
         notes:'Safe travels — and see you again in Japan.' }
     ] }
 ];
@@ -528,9 +552,10 @@ var DAYS = [
 /* Reservations — Tables tab */
 var TABLES = [
   { date:'2026-10-31', name:'Sushi Masuda',       meta:'Lunch 12:00 · Sushi · Aoyama', q:'Sushi Masuda Aoyama Tokyo', mapsLink:null },
+  { date:'2026-10-31', name:'Kawamura',           meta:'Dinner 18:00 · Kobe beef · Ginza', q:'Kawamura Ginza Tokyo', mapsLink:null },
   { date:'2026-11-01', name:'Sushi Mizukami',     meta:'Dinner 17:30 · Sushi · Ichibancho',   q:'Sushi Mizukami Ichibancho Chiyoda Tokyo', mapsLink:null },
   { date:'2026-11-02', name:'Yakitori Shinohara', meta:'Dinner 17:30 · Yakitori · Nishi-Azabu', q:'Yakitori Shinohara Nishi-Azabu Tokyo', mapsLink:null },
-  { date:'2026-11-03', name:'Ukai Ginza',         meta:'Dinner 17:30 · Wagyu teppanyaki · Ginza', q:'Ginza Ukai-tei 5-15-8 Ginza Tokyo', mapsLink:null },
+  { date:'2026-11-03', name:'Sazenka',            meta:'Dinner · time TBC · Chinese · Minami-Azabu', q:'Sazenka Minami-Azabu Tokyo', mapsLink:null },
   { date:'2026-11-04', name:'Maeda',              meta:'Dinner 18:00 · Kappo · Gion, Kyoto',  q:'Gion Maeda Kyoto', mapsLink:null },
   { date:'2026-11-06', name:'Miyoshi',            meta:'Dinner 17:00 · Wagyu kaiseki · Gion, Kyoto', q:'Nikunotakumi Miyoshi Gion Kyoto', mapsLink:null }
 ];
@@ -589,8 +614,8 @@ var DISCOVER = {
 
 /* ══════════════ HELPERS ══════════════ */
 function esc(s){if(s===null||s===undefined)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function gm(q,link){if(link)return link;return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q||'Japan');}
-function nav(q){return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+encodeURIComponent(q||'Japan');}
+function gm(q,link){if(link)return link;var id=q&&PLACE_IDS[q];return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q||'Japan')+(id?'&query_place_id='+id:'');}
+function nav(dest,q){var id=q&&PLACE_IDS[q];return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+encodeURIComponent(dest||q||'Japan')+(id?'&destination_place_id='+id:'');}
 function fmtDate(iso,opt){var p=iso.split('-');var d=new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));return d.toLocaleDateString('en-GB',Object.assign({timeZone:'UTC'},opt));}
 
 var toastTm;
@@ -669,7 +694,7 @@ function renderStop(stop,di,si){
   var hidden=stop.status==='suggestion';
   var pending=stop.status==='pending'||hidden;
   var hasLoc=!hidden&&!!(stop.q||stop.mapsLink);
-  var icon=stop.featured?'':'<span class="stop-icon">'+(ICONS[stop.type]||'📍')+'</span>';
+  var icon=stop.featured?'':'<span class="stop-icon">'+(stop.icon||ICONS[stop.type]||'📍')+'</span>';
   var dot=pending?'t-pending':'t-'+(stop.type||'restaurant');
   var cls=pending?' is-pending':(stop.featured?' is-feature':'');
   var title=hidden?'Happy Camper selection':stop.title;
@@ -689,7 +714,7 @@ function renderStop(stop,di,si){
   if(hasLoc){
     h+='<div class="map-actions">'
       +'<a href="'+gm(stop.q,stop.mapsLink)+'" target="_blank" rel="noopener" class="map-btn mp" aria-label="Open '+esc(stop.title)+' in Google Maps">📍 Maps</a>'
-      +'<a href="'+nav(stop.addr||stop.q)+'" target="_blank" rel="noopener" class="map-btn" aria-label="Directions to '+esc(stop.title)+'">🧭 Directions</a>'
+      +'<a href="'+nav(stop.addr||stop.q,stop.q)+'" target="_blank" rel="noopener" class="map-btn" aria-label="Directions to '+esc(stop.title)+'">🧭 Directions</a>'
       +(stop.taxi?'<a href="'+CONFIG.goTaxi+'" target="_blank" rel="noopener" class="map-btn taxi" aria-label="Book a GO taxi">🚕 GO Taxi</a>':'')
       +'<button type="button" class="map-btn" onclick="copyAddr('+di+','+si+')" aria-label="Copy address">⧉ Copy</button>'
       +'</div>';
@@ -920,8 +945,8 @@ function renderEmergency(){
 ═══════════════════════════════════════════════════════ */
 var HCIStatement=(function(){
   var BLOBS={
-    guest:'2LOyxSeJm44XJcj+mKlEE7Lt5lbY2ez3KVBM9VeChLb4pvL7WZb/TJddBlqigQEV0AcqTchPOIwvQVVJ5c8YDJL4ZlZMKV5YXZ14PQMXtb155NQLQyc42zTyePzaCi7W+Fm3N9B4NPgBc44am/GpUYWnMPYnCK+WMr+jpwZuyfxQQjFSPKoS5MHkhpiocqFxE5EK7eiSyXKBD0CMmkwhI4iFbd7cKDNcgf09Bk6e9cKfbnthp5AKIJGXVNu6uP92lONIS4+kwdmDWbwL/VuM6kXAxxvw6Z+sOmEyOBst/ML4kAZC0Z2Bpkld4v4i382gBd6H5rq66YKUsRoSjbtW91mxlfIGeaKB3izLoOrapmwnH20IQ8TPWJZ5Lb7SAs/SldByXVJJXZ+ej25wqCgqhMJeCHHFUrd7y7ZL8F2XI5s3sO9dLYuDNNwSD58yvr+EAM7w6L77sTrzUp2RfTXteASc1CdmYYyvPk86+s4fjXWE58yckHBuPlqrASFZ4XVx1Pby5f/DmuQHx6cM0wOZg/VHnjtzmIP87V3n3fYI3dKyOy8Eag71PyiJYNA1ScnKCQd7TDmpDB1hm2PIqvRIVu8V+5lRt8BE5M15LWccWG8sjdJJwhKuzb13Prp7TgtTH03A8SGPpiPB+tVnGOh7waxcBOAHE463cR4ts3+fs1oDDrG+69ezB6NMm8DEyUKoCiwJ8LyTRkb+qFXxuZHTn3tNkTvdrdMx/GKZ+z/os0EUHXskq2htteyhS/EfP/OmrMGYHNYCDp68/Hd10KCU+Otdvc1o9Y1R2mdsPwAioEqaue5/TzoanLbPNyCgAZ5/sIf6zdj8xbnGC2L24gPmmPwX7iVxrrldnpXKkJh+9blu0gyL7zovHMP2dvGAVQNTs04vSV9HJx8TJd5xQq/z7L8A+ryh28rZoSpCYrplc2eSFCHaMR6LAlwpBMs1EcNr+wB4xhW+8t8vGG5TFBGs7pTLVmjMUVe2wKptk5yRUGiVJI7LBDD312WwPqdas2QQJp2QBD0lNS2h8rSOISzRpAIbceY9hXYPk7+TgTaxtDcISBFh/JTHHyIdN1em/sdEBuDraAyoIgWRvX5tcMOWoAVh6ar356GNdWlEVR4Jj67StE1ermNOBI6Cnu4XI1N0oETFHGSS02sJVzhyefoswEW+NatE0xPkrRJVB+FvSl++DTqc5WxGpA9Ax/Bi+bobEduvML8xQMNcRmdsXfW02HSfzQElG1IREwv3IWmxQKFHzOxtDm0EAtMjEdTqqBrRHunTbG6riR4mKa/FgQpU0mufKVFcMJnLU+FB4eIyULOlDLl0eDTY5iuskEGjkIIKAGY3Q+Imz9GQ15P5KOBE+8LU/6BPsoOLzALiIqeAy4nzIhJ5O+IEbSkISIeyrtr8AV285uUM0mAdP+4mW4nLfLnPgp54EbGbTEzEX29fRQSkfgCFCaUjXaVFjOaIQFL/7zH2tjSvWc+P/MQjfaa19L/NRYv3XyRVYSDwxttrb0dvoYC6p1TVI56Rffnq1Wsg1FwPWQ5QodckfgcxC/hS5FsF0iXUKOo5d6FS+trKmbp8J19L+ggvsYfuluwvrcZmPwXIGchI6c9m/cHQX4V8vSId4HhUbOGwffSmTJqYi8vEeR6HcirYeh08UU3HClUv5NCIIQ2IeKwDqcewH3W9n3R6M5N4z+21urTYrrRggmacZE5zymJPGfInUcekvbel86yajOkv6/C32rou7b2NpDEqtbN6QX/VIoXdCH/YUFz1LJacdvyqmvnRt47FKNzMojfJ5NU7gahkX8vwz1fDPm8OPFMS1kQ/pz1hSGHTplNE93ZAk08mH49+tNo44H0LBzhSMRuWxC+CNpe3oOv0g2xHSx9oSOprQr3woMKdNwdDytdvbd5pTmTXBPhBGlc/pqD7DIun+t7P6BSNLMU1dVDwdSpW2rB2l4TaRa7ewdutHQ==',
-    staff:'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'
+    guest:'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',
+    staff:'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'
   };
   var ITER=250000, IDLE_MS=120000, idleTm=null, unlocked=false, bound=false;
   function el(){return document.getElementById('tab-statement');}
